@@ -30,9 +30,9 @@ export default {
       }
     },
     audio(newAudio) {
-      this.resetAndPlayNewAudio();
+      this.resetAudio();
       ws.send(JSON.stringify(
-        { target: 'control', key: 'now-playing', value: newAudio }
+        { target: 'control', key: 'nowPaying', value: newAudio }
       ));
     },
     paused(status) {
@@ -43,7 +43,7 @@ export default {
   },
   computed: {
     audioUrl() {
-      return this.audio ? `http://localhost:3000/uploads/music/${this.audio}` : '';
+      return this.audio ? `https://api.xxtsoft.top/fes/uploads/music/${this.audio}` : '';
     },
   },
   mounted() {
@@ -57,7 +57,7 @@ export default {
         this.audioElement.addEventListener('ended', this.handleAudioEnded);
       }
     },
-    resetAndPlayNewAudio() {
+    resetAudio() {
       if (this.audioElement) {
         this.stopAudio();
         this.audioElement.src = this.audioUrl;
@@ -65,14 +65,12 @@ export default {
       } else {
         this.initializeAudio();
       }
-      this.playAudio();
     },
     playAudio() {
-      if (!this.audioElement) {
-        this.initializeAudio();
+      if (this.audioElement) {
+        console.log(`Audio URL: ${this.audioUrl}`);
+        this.audioElement.play();
       }
-      console.log(`Audio URL: ${this.audioUrl}`);
-      this.audioElement.play();
     },
     pauseAudio() {
       if (this.audioElement) {

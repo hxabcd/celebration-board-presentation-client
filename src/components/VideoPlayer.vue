@@ -27,7 +27,7 @@ export default {
   },
   computed: {
     videoUrl() {
-      return this.video ? `http://localhost:3000/uploads/video/${this.video}` : '';
+      return this.video ? `https://api.xxtsoft.top/fes/uploads/video/${this.video}` : '';
     },
   },
   methods: {

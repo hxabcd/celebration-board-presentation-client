@@ -2,7 +2,7 @@
   <div id="app">
     <FullScreen />
     <BackgroundImage :image="currentImage" />
-    <MusicPlayer :audio="currentAudio" :volume="volume" :action="musicAction" />
+    <MusicPlayer ref="musicPlayer" :audio="currentAudio" :volume="volume" :action="musicAction" />
     <VideoPlayer :video="currentVideo" :action="videoAction" />
   </div>
 </template>
@@ -30,6 +30,7 @@ export default {
       currentVideo: null,
       musicAction: null,
       videoAction: null,
+      paused: null,
       volume: 0.5,
     };
   },
@@ -62,6 +63,9 @@ export default {
           case 'video':
             this.handleVideoAction(data);
             break;
+          case 'get':
+            this.handleGetRequests(data);
+            break;
           default:
             console.error('Unknown message type:', data.type);
         }
@@ -86,6 +90,30 @@ export default {
         this.currentVideo = data.file;
       }
       this.videoAction = data.action;
+    },
+    handleGetRequests(data) {
+      switch (data.key) {
+        case 'nowPlaying':
+          console.log(`nowPlaying: ${this.currentAudio}`)
+          ws.send(JSON.stringify(
+            { target: 'control', key: 'nowPaying', value: this.currentAudio }
+          ));
+          break;
+          case 'volume':
+          console.log(`Volume: ${this.volume}`)
+          ws.send(JSON.stringify(
+              { target: 'control', key: 'volume', value: this.volume }
+            ));
+            break;
+          case 'paused':
+          console.log(`Paused: ${this.$refs.musicPlayer.paused}`)
+          ws.send(JSON.stringify(
+              { target: 'control', key: 'paused', value: this.$refs.musicPlayer.paused }
+            ));
+            break;
+        default:
+          console.error('Unknown key type:', data.key);
+      }
     },
   },
   beforeUnmount() {

@@ -12,6 +12,8 @@ class WebSocketService {
             connected: false,
             error: null,
         });
+        this.reconnectInterval = 1000; // 重连间隔时间（毫秒）
+        this.shouldReconnect = true; // 是否允许自动重连
     }
 
     connect() {
@@ -28,6 +30,11 @@ class WebSocketService {
             this.state.connected = false;
             console.log('WebSocket disconnected');
             this.closeCallbacks.forEach(callback => callback());
+
+            // 尝试重连
+            if (this.shouldReconnect) {
+                this.reconnect();
+            }
         };
 
         this.socket.onerror = (error) => {
@@ -40,6 +47,20 @@ class WebSocketService {
         this.socket.onmessage = (event) => {
             this.messageCallbacks.forEach(callback => callback(event.data));
         };
+    }
+
+    reconnect() {
+        if (this.state.connected) {
+            return; // 如果已经连接成功，则不需要重连
+        }
+
+        console.log(`Attempting to reconnect in ${this.reconnectInterval / 1000} seconds...`);
+        setTimeout(() => {
+            if (!this.state.connected) {
+                console.log('Reconnecting...');
+                this.connect();
+            }
+        }, this.reconnectInterval);
     }
 
     onMessage(callback) {
@@ -118,9 +139,16 @@ class WebSocketService {
     getReadyState() {
         return this.socket ? this.socket.readyState : null;
     }
+
+    close() {
+        this.shouldReconnect = false; // 禁止自动重连
+        if (this.socket) {
+            this.socket.close();
+        }
+    }
 }
 
-const websocketService = new WebSocketService('ws://localhost:3000');
+const websocketService = new WebSocketService('ws://api.xxtsoft.top/fes');
 websocketService.connect();
 
 export default websocketService;

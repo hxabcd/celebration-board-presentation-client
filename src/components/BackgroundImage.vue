@@ -8,7 +8,7 @@ export default {
   computed: {
     backgroundStyle() {
       return {
-        backgroundImage: `url(http://localhost:3000/uploads/image/${this.image})`,
+        backgroundImage: `url(https://api.xxtsoft.top/fes/uploads/image/${this.image})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         width: '100vw',
